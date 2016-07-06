@@ -2,6 +2,7 @@
 
 # Install and load caret and klaR (NB) packages
 install.packages(c("caret", "klaR"), dependencies = TRUE)
+
 library(caret)
 library(klaR)
 
@@ -10,10 +11,9 @@ data(iris)
 
 ##### Data Splitting #####
 # Define an 80%/20% train/test split of the dataset
-split = 0.80
-trainIndex <- createDataPartition(iris$Species, p = split, list = FALSE)
-data_train <- iris[trainIndex,]
-data_test <- iris[ - trainIndex,]
+trainIndex <- createDataPartition(iris$Species, p = 0.80, list = FALSE)
+data_train <- iris[trainIndex, ]
+data_test  <- iris[-trainIndex, ]
 
 # Train a naive bayes model
 model <- NaiveBayes(Species ~ ., data = data_train)
