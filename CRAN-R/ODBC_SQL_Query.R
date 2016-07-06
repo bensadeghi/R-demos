@@ -1,11 +1,11 @@
-### Demonstrate connectivity and SQL Query via ODBC with SQL-DW and Hive/HDInsight on Azure
+### Demonstrate Open Database Connectivity (ODBC)
+### Make connections with, and perform queries on Azure SQL-DW and Hive (HDInsight)
 
 # Install and load the RODBC library
 install.packages("RODBC", dependencies = TRUE)
 library(RODBC)
 
-######################
-# Connect to MS SQL-DW
+# Connect to Azure SQL-DW database
 conn <- "DRIVER={SQL Server Native Client 11.0};
         SERVER=*****.database.windows.net;
         DATABASE=*****;
@@ -16,13 +16,17 @@ conn <- "DRIVER={SQL Server Native Client 11.0};
 
 channel <- odbcDriverConnect(conn)
 
-# Perform SQL query on database
-initdata <- sqlQuery(channel, paste("SELECT TOP 10 * FROM nyctaxinb.nyctaxi"))
+# Perform direct SQL query via ODBC
+sqldwData <- sqlQuery(channel, paste("SELECT TOP 10 * FROM mySQLDWTable"))
 
-head(initdata)
+# Print first few rows of results
+head(sqldwData)
 
-###########################
-# Connect to Hive/HDInsight
+# Close the connection
+close(channel)
+
+
+# Connect to Hive/Hadoop via ODBC
 conn <- "DRIVER={Microsoft Hive ODBC Driver};
         Host=*****.azurehdinsight.net;
         Port=443;
@@ -33,6 +37,8 @@ conn <- "DRIVER={Microsoft Hive ODBC Driver};
 
 channel <- odbcDriverConnect(conn)
 
-initdata <- sqlQuery(channel, paste("SELECT * FROM nyctaxidb.trip LIMIT 10;"))
+hiveData <- sqlQuery(channel, paste("SELECT * FROM myHiveTable LIMIT 10;"))
 
-head(initdata)
+head(hiveData)
+
+close(channel)
