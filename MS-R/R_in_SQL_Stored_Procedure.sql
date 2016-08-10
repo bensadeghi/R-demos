@@ -27,7 +27,7 @@ INSERT INTO MyData VALUES(100);
 GO
 
 -- print all rows of MyData table
-SELECT * FROM MyData
+SELECT * FROM MyData;
 
 -- pass select query resutls to ouput dataset
 EXEC sp_execute_external_script
@@ -113,9 +113,9 @@ CREATE TABLE iris_data
   "Species" VARCHAR(100) 
 );
 GO 
-INSERT INTO iris_data EXEC get_iris_dataset 
+INSERT INTO iris_data EXEC get_iris_dataset;
 GO
-SELECT * FROM iris_data
+SELECT * FROM iris_data;
 GO
 
 -- generate a decision tree model based on data from SQL Server
@@ -153,8 +153,8 @@ DROP PROCEDURE IF EXISTS predict_species;
 GO
 CREATE PROCEDURE predict_species (@model VARCHAR(100)) AS
 BEGIN
-	DECLARE @dtree_model varbinary(max) = (SELECT model FROM built_models WHERE model_name = @model);
-	EXEC sp_execute_external_script
+    DECLARE @dtree_model varbinary(max) = (SELECT model FROM built_models WHERE model_name = @model);
+    EXEC sp_execute_external_script
       @language = N'R',
       @script = N'
           iris_model <- unserialize(dtree_model)
@@ -163,7 +163,7 @@ BEGIN
       @input_data_1_name = N'read_iris_data',
       @params = N'@dtree_model varbinary(max)',
       @dtree_model = @dtree_model
-	WITH RESULT SETS (("Setosa_Prob" FLOAT, "Versicolor_Prob" FLOAT, "Virginica_Prob" FLOAT));
+    WITH RESULT SETS (("Setosa_Prob" FLOAT, "Versicolor_Prob" FLOAT, "Virginica_Prob" FLOAT));
 END;
 GO
 EXEC predict_species 'DTree';
