@@ -56,6 +56,9 @@ cov(iris[, 1:4])
 # Statistics of Sepal.Length by species
 aggregate(Sepal.Length ~ Species, summary, data = iris)
 
+# Statistic (mean) of fields by species
+aggregate(. ~ Species, data = iris, mean)
+
 # Box plot of Sepal.Length distribution by species
 boxplot(Sepal.Length ~ Species, data = iris)
 
