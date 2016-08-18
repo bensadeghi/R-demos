@@ -72,8 +72,10 @@ adsSummary
 # Formula to use
 formula <- "ARR_DEL15 ~ DISTANCE + DAY_OF_WEEK + DEP_TIME"
 
-# Run a logistic regression
-modelHadoop <- rxLogit(formula, data = airOnTimeDataXdf)
+# Run a logistic regression and time it
+timeHadoop <- system.time(
+    modelHadoop <- rxLogit(formula, data = airOnTimeDataXdf)
+)
 
 # Display model summary
 summary(modelHadoop)
@@ -103,8 +105,10 @@ rxSetComputeContext(mySparkCluster)
 # Formula to use
 formula <- "ARR_DEL15 ~ DISTANCE + DAY_OF_WEEK + DEP_TIME"
 
-# Run a logistic regression
-modelSpark <- rxLogit(formula, data = airOnTimeDataXdf)
+# Run a logistic regression and time it
+timeSpark <- system.time(
+    modelSpark <- rxLogit(formula, data = airOnTimeDataXdf)
+)
 
 # Display model summary
 summary(modelSpark)
@@ -120,3 +124,6 @@ predictions <- rxPredict(modelObject = modelSpark, data = airOnTimeDataXdf,
 
 # Print results
 rxGetInfo(predictions, getVarInfo = TRUE, numRows = 5)
+
+# Compare model building timings
+cbind(timeHadoop, timeSpark)
