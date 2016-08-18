@@ -6,6 +6,7 @@
 remoteDir <- "http://packages.revolutionanalytics.com/datasets"
 download.file(file.path(remoteDir, "mortDefault.tar.gz"), "/tmp/mortDefault.tar.gz")
 # Decompress files
+Sys.setenv(TAR = "/bin/tar")
 untar("/tmp/mortDefault.tar.gz", exdir = "/tmp", compressed = "gzip")
 
 # Set the HDFS (WASB) location of example data
@@ -60,9 +61,11 @@ mdSummary
 # Use all fields to predict default
 myFormula <- "default ~ creditScore + houseAge + yearsEmploy + ccDebt" 
 
-# Build model using above formula
-hadoopModel <- rxDForest(myFormula, data = mortgageDataXdf,
-			nTree = 2, maxDepth = 2)
+# Build model using above formula and time it
+timeHadoop <- system.time(
+    hadoopModel <- rxDForest(myFormula, data = mortgageDataXdf,
+                             nTree = 2, maxDepth = 2)
+)
 
 # Print trees of forest model
 hadoopModel$forest
@@ -90,9 +93,11 @@ rxSetComputeContext(mySparkCluster)
 # Use all fields to predict default
 myFormula <- "default ~ creditScore + houseAge + yearsEmploy + ccDebt" 
 
-# Build model using above formula
-sparkModel <- rxDForest(myFormula, data = mortgageDataXdf,
-			nTree = 2, maxDepth = 2)
+# Build model using above formula and time it
+timeSpark <- system.time(
+    sparkModel <- rxDForest(myFormula, data = mortgageDataXdf,
+                            nTree = 2, maxDepth = 2)
+)
 
 # Print trees of forest model
 sparkModel$forest
@@ -106,3 +111,6 @@ predictions <- rxPredict(modelObject = sparkModel, data = mortgageDataXdf,
      outData = outputXdf, overwrite = TRUE)
 
 rxGetInfo(predictions, getVarInfo = TRUE, numRows = 5)
+
+# Compare model building timings
+cbind(timeHadoop, timeSpark)
