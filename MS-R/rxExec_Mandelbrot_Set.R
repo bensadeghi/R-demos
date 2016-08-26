@@ -4,6 +4,9 @@
 # Load ScaleR Package
 library(RevoScaleR)
 
+# Use Local Parallel Compute Context
+rxSetComputeContext("localpar")
+
 # Mandelbrot user-defined function
 mandelbrot <- function(x0, y0, lim) {
     x <- x0; y <- y0
@@ -28,10 +31,10 @@ x.in <- seq(-2.0, 0.6, length.out=npix)
 y.in <- seq(-1.3, 1.3, length.out=npix)    
 
 # Distributed execution of vmandelbrot function, iterated 100 times,
-# passing 1/10 of tasks to each available compute element
+# passing 1/8 of tasks to each available compute element
 niterations <- 100
 z <- rxExec(vmandelbrot, x.in, y0=rxElemArg(y.in), niterations,
-	taskChunkSize=npix/10, execObjects="mandelbrot")    
+	taskChunkSize=npix/8, execObjects="mandelbrot")
 
 # Transform vector to matrix and display as image
 z <- matrix(unlist(z), ncol=npix)
