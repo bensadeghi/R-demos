@@ -10,7 +10,8 @@ EXEC sp_execute_external_script
   @script = N'print(''Hello World'')'
 GO
 
--- simple Hello example as SQL table
+-- simple Hello example as SQL table, just passing data through R
+-- note that input and output tables are SQL
 EXEC sp_execute_external_script
   @language = N'R',
   @script = N'OutputDataSet <- InputDataSet',
@@ -29,36 +30,12 @@ GO
 -- print all rows of MyData table
 SELECT * FROM MyData;
 
--- pass select query resutls to ouput dataset
+-- pass select query results to R and multiply by 9
 EXEC sp_execute_external_script
   @language = N'R',
-  @script = N'OutputDataSet <- InputDataSet',
+  @script = N'OutputDataSet <- InputDataSet * 9',
   @input_data_1 = N'SELECT * FROM MyData;'
 WITH RESULT SETS (([NewColName] INT NOT NULL));
-
--- input and output tables are SQL
-EXEC sp_execute_external_script
-  @language = N'R',
-  @script = N'SQLOut <- SQLIn',
-  @input_data_1 = N'SELECT 12 AS Col;',
-  @input_data_1_name = N'SQLIn',
-  @output_data_1_name = N'SQLOut'
-WITH RESULT SETS (([NewColName] INT NOT NULL));
-
--- input table is data.frame, output is single column SQL table
-EXEC sp_execute_external_script
-  @language = N'R',
-  @script = N'mytextvariable <- c("hello", " ", "world")
-    OutputDataSet <- as.data.frame(mytextvariable)',
-  @input_data_1 = N'SELECT 1 AS Temp1'
-WITH RESULT SETS (([col] CHAR(20) NOT NULL));
-
--- input table is data.frame, output is single row SQL table
-EXEC sp_execute_external_script
-  @language = N'R',
-  @script = N'OutputDataSet <- data.frame("hello", " ", "world")',
-  @input_data_1 = N''
-WITH RESULT SETS (([col1] VARCHAR(20), [col2] CHAR(1), [col3] VARCHAR(20)));
 
 -- matrix multiplication with R (outer product)
 EXEC sp_execute_external_script
@@ -67,18 +44,9 @@ EXEC sp_execute_external_script
     x <- as.matrix(InputDataSet)
     y <- array(12:15)
     OutputDataSet <- as.data.frame(x %*% y)',
-  @input_data_1 = N'SELECT [Col1] FROM MyData;'
+  @input_data_1 = N'SELECT * FROM MyData;'
 WITH RESULT SETS (([Col1] INT, [Col2] INT, [Col3] INT, Col4 INT));
 
--- combining R and SQL datasets
-EXEC sp_execute_external_script
-  @language = N'R',
-  @script = N'
-    df1 <- as.data.frame(array(1:6))
-    df2 <- as.data.frame(c(InputDataSet, df1))
-    OutputDataSet <- df2',
-  @input_data_1 = N'SELECT [Col1] FROM MyData;'
-WITH RESULT SETS (([Col2] INT NOT NULL, [Col3] INT NOT NULL));
 
 
 ------ iris data set examples ------
@@ -118,7 +86,7 @@ GO
 SELECT * FROM iris_data;
 GO
 
--- generate a decision tree model based on data from SQL Server
+-- generate a decision tree model using data from SQL Server table
 DROP PROC IF EXISTS generate_iris_model;  
 GO
 CREATE PROC generate_iris_model  
@@ -129,7 +97,7 @@ BEGIN
        @script = N'
           iris_model <- rxDTree(Species ~ Sepal.Length + Sepal.Width + Petal.Length + Petal.Width, data = read_iris_data)
           trained_model <- data.frame(payload = as.raw(serialize(iris_model, connection = NULL)))',
-       @input_data_1 = N'SELECT "Sepal.Length", "Sepal.Width", "Petal.Length", "Petal.Width", "Species" FROM iris_data',
+       @input_data_1 = N'SELECT * FROM iris_data',
        @input_data_1_name = N'read_iris_data',
        @output_data_1_name = N'trained_model'
     WITH RESULT SETS ((model varbinary(max)));  
