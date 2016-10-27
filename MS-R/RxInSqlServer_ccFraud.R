@@ -119,7 +119,7 @@ if (rxSqlServerTableExists("ccScoreOutput"))
 
 rxPredict(modelObject = logitObj,
             data = sqlScoreDS,
-            outData = sqlScoreDS,
+            outData = sqlServerOutDS,
             predVarNames = "ccFraudLogitScore",
             type = "link",
             writeModelVars = TRUE,
