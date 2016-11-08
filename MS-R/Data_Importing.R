@@ -1,5 +1,7 @@
 ### Importing Data - Methods for importing text, CSV, SAS, SPSS data
 
+rxSetComputeContext(RxLocalParallel())
+
 # Check data source directory
 readPath <- rxGetOption("sampleDataDir")
 print(readPath)
