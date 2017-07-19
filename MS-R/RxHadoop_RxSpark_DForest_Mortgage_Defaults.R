@@ -4,7 +4,7 @@
 ####### Fetch Data #######
 # Download data to the tmp folder
 remoteDir <- "http://packages.revolutionanalytics.com/datasets"
-download.file(file.path(remoteDir, "mortDefault.tar.gz"), "/tmp/mortDefault.tar.gz")
+download.file(file.path(remoteDir, "mortDefault.tar.gz"), "/tmp/mortDefault.tar.gz", method = "wget")
 # Decompress files
 Sys.setenv(TAR = "/bin/tar")
 untar("/tmp/mortDefault.tar.gz", exdir = "/tmp", compressed = "gzip")
@@ -84,7 +84,7 @@ rxGetInfo(predictions, getVarInfo = TRUE, numRows = 5)
 ##############################################
 ####### Change Compute Conext to Spark #######
 # Define the Spark compute context 
-mySparkCluster <- RxSpark(consoleOutput=TRUE)
+mySparkCluster <- rxSparkConnect(consoleOutput=TRUE)
 # Set the compute context 
 rxSetComputeContext(mySparkCluster)
 
@@ -111,6 +111,8 @@ predictions <- rxPredict(modelObject = sparkModel, data = mortgageDataXdf,
      outData = outputXdf, overwrite = TRUE)
 
 rxGetInfo(predictions, getVarInfo = TRUE, numRows = 5)
+
+rxSparkDisconnect()
 
 # Compare model building timings
 cbind(timeHadoop, timeSpark)
