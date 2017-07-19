@@ -14,18 +14,18 @@ inputDir <- file.path(bigDataDirRoot, "AirOnTimeCSV2012")
 
 # Download data to the tmp folder
 remoteDir <- "http://packages.revolutionanalytics.com/datasets/AirOnTimeCSV2012"
-download.file(file.path(remoteDir, "airOT201201.csv"), file.path(source, "airOT201201.csv"))
-download.file(file.path(remoteDir, "airOT201202.csv"), file.path(source, "airOT201202.csv"))
-download.file(file.path(remoteDir, "airOT201203.csv"), file.path(source, "airOT201203.csv"))
-download.file(file.path(remoteDir, "airOT201204.csv"), file.path(source, "airOT201204.csv"))
-download.file(file.path(remoteDir, "airOT201205.csv"), file.path(source, "airOT201205.csv"))
-download.file(file.path(remoteDir, "airOT201206.csv"), file.path(source, "airOT201206.csv"))
-download.file(file.path(remoteDir, "airOT201207.csv"), file.path(source, "airOT201207.csv"))
-download.file(file.path(remoteDir, "airOT201208.csv"), file.path(source, "airOT201208.csv"))
-download.file(file.path(remoteDir, "airOT201209.csv"), file.path(source, "airOT201209.csv"))
-download.file(file.path(remoteDir, "airOT201210.csv"), file.path(source, "airOT201210.csv"))
-download.file(file.path(remoteDir, "airOT201211.csv"), file.path(source, "airOT201211.csv"))
-download.file(file.path(remoteDir, "airOT201212.csv"), file.path(source, "airOT201212.csv"))
+download.file(file.path(remoteDir, "airOT201201.csv"), file.path(source, "airOT201201.csv"), method = "wget", quiet = T)
+download.file(file.path(remoteDir, "airOT201202.csv"), file.path(source, "airOT201202.csv"), method = "wget", quiet = T)
+download.file(file.path(remoteDir, "airOT201203.csv"), file.path(source, "airOT201203.csv"), method = "wget", quiet = T)
+download.file(file.path(remoteDir, "airOT201204.csv"), file.path(source, "airOT201204.csv"), method = "wget", quiet = T)
+download.file(file.path(remoteDir, "airOT201205.csv"), file.path(source, "airOT201205.csv"), method = "wget", quiet = T)
+download.file(file.path(remoteDir, "airOT201206.csv"), file.path(source, "airOT201206.csv"), method = "wget", quiet = T)
+download.file(file.path(remoteDir, "airOT201207.csv"), file.path(source, "airOT201207.csv"), method = "wget", quiet = T)
+download.file(file.path(remoteDir, "airOT201208.csv"), file.path(source, "airOT201208.csv"), method = "wget", quiet = T)
+download.file(file.path(remoteDir, "airOT201209.csv"), file.path(source, "airOT201209.csv"), method = "wget", quiet = T)
+download.file(file.path(remoteDir, "airOT201210.csv"), file.path(source, "airOT201210.csv"), method = "wget", quiet = T)
+download.file(file.path(remoteDir, "airOT201211.csv"), file.path(source, "airOT201211.csv"), method = "wget", quiet = T)
+download.file(file.path(remoteDir, "airOT201212.csv"), file.path(source, "airOT201212.csv"), method = "wget", quiet = T)
 
 # Make the directory
 rxHadoopMakeDir(inputDir)
@@ -96,7 +96,7 @@ rxGetInfo(predictions, getVarInfo = TRUE, numRows = 5)
 #####################################################
 ########## Change Compute Context to SPARK ##########
 # Define the Spark compute context 
-mySparkCluster <- RxSpark(consoleOutput=TRUE)
+mySparkCluster <- rxSparkConnect(consoleOutput=TRUE)
 # Set the compute context 
 rxSetComputeContext(mySparkCluster)
 
@@ -124,6 +124,8 @@ predictions <- rxPredict(modelObject = modelSpark, data = airOnTimeDataXdf,
 
 # Print results
 rxGetInfo(predictions, getVarInfo = TRUE, numRows = 5)
+
+rxSparkDisconnect()
 
 # Compare model building timings
 cbind(timeHadoop, timeSpark)
