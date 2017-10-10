@@ -13,7 +13,7 @@ dir.create(source)
 inputDir <- file.path(bigDataDirRoot, "AirOnTimeCSV2012")
 
 # Download data to the tmp folder
-remoteDir <- "http://packages.revolutionanalytics.com/datasets/AirOnTimeCSV2012"
+remoteDir <- "https://packages.revolutionanalytics.com/datasets/AirOnTimeCSV2012"
 download.file(file.path(remoteDir, "airOT201201.csv"), file.path(source, "airOT201201.csv"), method = "wget", quiet = T)
 download.file(file.path(remoteDir, "airOT201202.csv"), file.path(source, "airOT201202.csv"), method = "wget", quiet = T)
 download.file(file.path(remoteDir, "airOT201203.csv"), file.path(source, "airOT201203.csv"), method = "wget", quiet = T)
